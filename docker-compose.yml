@@ -1,0 +1,6 @@
+services:
+ app:
+  image: ahmet18/mini-vol:v2
+  volumes:
+   - ./logs:/data
+  restart: always

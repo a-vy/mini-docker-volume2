@@ -1,8 +1,8 @@
 name: Build & Push Docker image
-
 on:
   push:
     branches: [ main ]
+    tags: ['v1.0.0']
   workflow_dispatch:
 
 jobs:
@@ -29,11 +29,19 @@ jobs:
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=latest" >> $GITHUB_OUTPUT
 
-      - name: Build and push
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
           cache-from: type=registry,ref=${{ steps.meta.outputs.image }}:buildcache
           cache-to: type=registry,ref=${{ steps.meta.outputs.image }}:buildcache,mode=max
+
+      - name: Create and push git tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag v1.0.0
+          git push origin v1.0.0
